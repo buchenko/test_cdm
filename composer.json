@@ -1,0 +1,23 @@
+{
+  "require": {
+    "yiisoft/yii": ">=1.1.16",
+    "pear/http_request2": "*"
+  } ,
+  "autoload": {
+    "psr-0": {
+      "HTTP_Request2": "vendor/pear/http_request2/HTTP/",
+      "Net_URL2": "vendor/pear/net_url2/Net/",
+      "PEAR_Exception": "vendor/pear/pear_exception/PEAR/"
+    }
+  },
+  "config":{
+    "vendor-dir": "protected/vendor"
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "protected/yiic migrate"
+    ]
+  }
+}
+
+
