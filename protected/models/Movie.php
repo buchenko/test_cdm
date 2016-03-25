@@ -16,6 +16,7 @@
 class Movie extends CActiveRecord
 {
     public $rating;
+
     /**
      * @return string the associated database table name
      */
@@ -32,38 +33,51 @@ class Movie extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('title','required','on'=>'insert,update'),
+            array('title', 'required', 'on' => 'insert,update'),
             array('title, original_title, release_date, runtime, overview, genres', 'safe'),
-            array('poster_path', 'file', 'types' => 'jpg, gif, png','safe' => false,  'maxSize' => 1048576,
-                'allowEmpty'=>true,'on'=>'update'),
+            array(
+                'poster_path',
+                'file',
+                'types' => 'jpg, gif, png',
+                'safe' => false,
+                'maxSize' => 1048576,
+                'allowEmpty' => true,
+                'on' => 'update'
+            ),
         );
     }
 
-    protected function beforeSave(){
-        if(!parent::beforeSave())
+    protected function beforeSave()
+    {
+        if (!parent::beforeSave()) {
             return false;
-        if($this->scenario=='update' && ($poster=CUploadedFile::getInstance($this,'poster_path'))){
+        }
+        if ($this->scenario == 'update' && ($poster = CUploadedFile::getInstance($this, 'poster_path'))) {
             $this->deleteImg(); // старый документ удалим, потому что загружаем новый
 
-            $this->poster_path=$poster;
+            $this->poster_path = $poster;
             $this->poster_path->saveAs(
-                Yii::getPathOfAlias('webroot.images').DIRECTORY_SEPARATOR.$this->poster_path);
+                Yii::getPathOfAlias('webroot.images') . DIRECTORY_SEPARATOR . $this->poster_path);
         }
         return true;
     }
 
-    protected function beforeDelete(){
-        if(!parent::beforeDelete())
+    protected function beforeDelete()
+    {
+        if (!parent::beforeDelete()) {
             return false;
+        }
         $this->deleteImg(); // удалили модель? удаляем и файл
         return true;
     }
 
-    public function deleteImg(){
-        $posterPath=Yii::getPathOfAlias('webroot.images').DIRECTORY_SEPARATOR.
+    public function deleteImg()
+    {
+        $posterPath = Yii::getPathOfAlias('webroot.images') . DIRECTORY_SEPARATOR .
             $this->poster_path;
-        if(is_file($posterPath))
+        if (is_file($posterPath)) {
             unlink($posterPath);
+        }
     }
 
     /**
@@ -106,13 +120,13 @@ class Movie extends CActiveRecord
      * @return CActiveDataProvider the data provider that can return the models
      * based on the search/filter conditions.
      */
-    public function search($currentPage=0, $release = false)
+    public function search($currentPage = 0, $release = false)
     {
         $query = TheMovieDB::discoverMovie($currentPage, $release);
         $rawData = $query['results'];
         $total_pages = min($query['total_pages'], 5);
 //        $total_results = $query['total_results'];
-        $total_results = $total_pages*20;
+        $total_results = $total_pages * 20;
         $dataProvider = new CArrayDataProvider($rawData, array(
 //            'sort' => array(
 //                'attributes' => array(

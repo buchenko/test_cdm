@@ -30,7 +30,7 @@ class MovieController extends Controller
         if (isset($_POST['Movie'])) {
             $model->attributes = $_POST['Movie'];
             if ($model->save()) {
-                if(!empty($_POST['Movie']['rating'])){
+                if (!empty($_POST['Movie']['rating'])) {
                     $model->rating = $_POST['Movie']['rating'];
                     $model->setRatingMovie();
                 }
@@ -65,9 +65,9 @@ class MovieController extends Controller
     {
         $model = new Movie('search');
         $model->unsetAttributes();  // clear any default values
-        $pages=new CPagination(500);
+        $pages = new CPagination(500);
         // элементов на страницу
-        $pages->pageSize=20;
+        $pages->pageSize = 20;
 
         $this->render('index', array(
             'model' => $model,

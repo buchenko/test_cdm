@@ -24,7 +24,7 @@ $this->widget('CLinkPager', array(
             'class' => 'CButtonColumn',
             'viewButtonUrl' => 'Yii::app()->controller->createUrl("view",array("id"=>$data["id"]))',
             'deleteButtonUrl' => 'Yii::app()->controller->createUrl("delete",array("id"=>$data["id"]))',
-            'deleteConfirmation'=> 'Удалить данную запись из локальной базы?',
+            'deleteConfirmation' => 'Удалить данную запись из локальной базы?',
             'updateButtonUrl' => 'Yii::app()->controller->createUrl("update",array("id"=>$data["id"]))'
 
         ),
