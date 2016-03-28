@@ -52,9 +52,10 @@ class MovieController extends Controller
         $this->loadModel($id)->delete();
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-        if (!isset($_GET['ajax'])) {
-            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
-        }
+//        if (!isset($_GET['ajax'])) {
+//            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
+//        }
+        $this->redirect(array('index'));
     }
 
     /**
@@ -111,9 +112,9 @@ class MovieController extends Controller
                 if (!$model->save()) {
                     throw new CHttpException(500, 'Невозможно сохранить запись в БД.');
                 }
-            } else {
-//                throw new CHttpException(404, 'Запрашиваемая страница не существует.');
-            }
+            }/* else {
+                throw new CHttpException(404, 'Запрашиваемая страница не существует.');
+            }*/
         }
 
         return $model;
