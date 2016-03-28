@@ -12,12 +12,6 @@
   },
   "config": {
     "vendor-dir": "protected/vendor"
-  },
-  "scripts": {
-    "post-install-cmd": [
-      "cd protected",
-      "yiic migrate"
-    ]
   }
 }
 
