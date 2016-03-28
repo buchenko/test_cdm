@@ -10,7 +10,8 @@ $this->pageTitle = Yii::app()->name;
 <pre>
     <?php
     //    echo ;
-    print_r(TheMovieDB::test());
+    var_dump(TheMovieDB::test());
+//    print_r(TheMovieDB::test());
     ?>
     </pre>
 

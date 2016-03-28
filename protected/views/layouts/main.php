@@ -32,7 +32,6 @@
     <div id="mainmenu">
         <?php $this->widget('zii.widgets.CMenu', array(
             'items' => array(
-                array('label' => 'тест', 'url' => array('/site/index')),
                 array('label' => 'наиболее популярные фильмы', 'url' => array('/movie/index')),
                 array('label' => 'сейчас в кинотеатре', 'url' => array('/movie/release')),
                 array('label' => 'Авторизация', 'url' => array('/site/login'), 'visible' => Yii::app()->user->isGuest),

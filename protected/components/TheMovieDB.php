@@ -13,39 +13,15 @@ class TheMovieDB
         self::$_remoteHost = $value;
     }
 
-
     public static function test()
     {
 
-        self::getConfiguration();
-        self::setRating(550, 8);
-        /*
-                $ch = curl_i();
-
-                curl_setopt($ch, CURLOPT_URL, "http://api.themoviedb.org/3/movie/550/rating?api_key=".self::$_apiKey.
-                                                "&guest_session_id=".Yii::app()->user->getState('guest_session_id'));
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-                curl_setopt($ch, CURLOPT_HEADER, FALSE);
-
-                curl_setopt($ch, CURLOPT_POST, TRUE);
-
-                curl_setopt($ch, CURLOPT_POSTFIELDS, "{\"value\": 7.5}");
-        //        curl_setopt($ch, CURLOPT_POSTFIELDS, array('api_key' => self::$_apiKey,
-        //            'guest_session_id' =>  Yii::app()->user->getState('guest_session_id')));
-
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                    "Accept: application/json",
-                    "Content-Type: application/json"
-                ));
-
-                $response = curl_exec($ch);
-                curl_close($ch);
-
-                var_dump($response);*/
+        return 'test';
     }
 
     private static function getConfiguration()
     {
+        // в идеале нужно сделать кеширование, но пока что так
 
         if (Yii::app()->user->isGuest) {
             Yii::app()->getRequest()->redirect(Yii::app()->user->loginUrl);
@@ -150,29 +126,27 @@ class TheMovieDB
 
         self::getConfiguration();
 
-        $request = new HTTP_Request2(self::$_remoteHost . 'movie/' . $id . '/rating?api_key=' . self::$_apiKey .
-            '&guest_session_id=' . Yii::app()->user->getState('guest_session_id'));
+        $request = new HTTP_Request2(self::$_remoteHost . 'movie/' . $id . '/rating');
         $request->setAdapter('HTTP_Request2_Adapter_Curl');
         $request->setMethod(HTTP_Request2::METHOD_POST)
             ->setHeader('Accept: application/json')
             ->setHeader('Content-Type: application/json')
-            ->setBody('{\"value\":' . $rating . '}');
-//        $url = $request->getUrl();
-//        $url->setQueryVariables(array(
-//            'package_name' => array('HTTP_Request2', 'Net_URL2'),
-//            'status'       => 'Open'
-//        ));
-//        $url->setQueryVariable('api_key', self::$_apiKey);
-//        $url->setQueryVariable('guest_session_id', Yii::app()->user->getState('guest_session_id'));
+            ->setBody("{\"value\": $rating}");
+        $url = $request->getUrl();
+        $url->setQueryVariables(array(
+            'package_name' => array('HTTP_Request2', 'Net_URL2'),
+            'status'       => 'Open'
+        ));
+        $url->setQueryVariable('api_key', self::$_apiKey);
+        $url->setQueryVariable('guest_session_id', Yii::app()->user->getState('guest_session_id'));
 
         $response = $request->send();
-        $body = $response->getBody();
-        $res = json_decode($body, true);
-        if ($response->getStatus() == 200) {
-            return $res['status_code'];
-        } else {
-            return $res['status_message'];
+//        $body = $response->getBody(); /* для получения текстового описания результата*/
+        $status = $response->getStatus();
+        if ($status == 200 || $status == 201) {
+            return true;
         }
+        return false;
     }
 
     public static function discoverMovie($currentPage, $release = false)
@@ -194,7 +168,7 @@ class TheMovieDB
             'status' => 'Open'
         ));
         $url->setQueryVariable('language', 'ru');
-        $url->setQueryVariable('page', 1 + $currentPage);
+        $url->setQueryVariable('page', $currentPage);
         $url->setQueryVariable('api_key', self::$_apiKey);
         if ($release) {
             $url->setQueryVariable('sort_by', 'release_date.desc');

@@ -28,12 +28,11 @@ class MovieController extends Controller
         // $this->performAjaxValidation($model);
 
         if (isset($_POST['Movie'])) {
+            if (!empty($_POST['Movie']['rating'])) {
+                $model->rating = $_POST['Movie']['rating'];
+            }
             $model->attributes = $_POST['Movie'];
-            if ($model->save()) {
-                if (!empty($_POST['Movie']['rating'])) {
-                    $model->rating = $_POST['Movie']['rating'];
-                    $model->setRatingMovie();
-                }
+            if ( $model->save()) {
                 $this->redirect(array('view', 'id' => $model->id));
             }
         }
@@ -54,7 +53,7 @@ class MovieController extends Controller
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
         if (!isset($_GET['ajax'])) {
-            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
         }
     }
 
@@ -63,11 +62,17 @@ class MovieController extends Controller
      */
     public function search($release)
     {
-        $model = new Movie('search');
+        $model = new Movie();
         $model->unsetAttributes();  // clear any default values
-        $pages = new CPagination(500);
-        // элементов на страницу
-        $pages->pageSize = 20;
+
+
+
+        $maxPages = Yii::app()->params['totalPages'];
+        $maxPages = max(1, min($maxPages, 1000));
+
+        $pages = new CPagination();
+        $pages->pageSize = Yii::app()->params['pageSize']; // default 20
+        $pages->itemCount = $maxPages * $pages->pageSize;
 
         $this->render('index', array(
             'model' => $model,
@@ -107,7 +112,7 @@ class MovieController extends Controller
                     throw new CHttpException(500, 'Невозможно сохранить запись в БД.');
                 }
             } else {
-                throw new CHttpException(404, 'Запрашиваемая страница не существует.');
+//                throw new CHttpException(404, 'Запрашиваемая страница не существует.');
             }
         }
 

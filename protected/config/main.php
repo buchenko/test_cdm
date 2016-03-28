@@ -85,5 +85,7 @@ return array(
     'params' => array(
         // this is used in contact page
         'adminEmail' => 'webmaster@example.com',
+        'totalPages' => 5, // page	Minimum 1, maximum 1000.
+        'pageSize' => 20, //
     ),
 );

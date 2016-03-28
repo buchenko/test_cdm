@@ -44,6 +44,8 @@ class Movie extends CActiveRecord
                 'allowEmpty' => true,
                 'on' => 'update'
             ),
+            array('rating', 'setRatingMovie'),
+
         );
     }
 
@@ -122,23 +124,13 @@ class Movie extends CActiveRecord
      */
     public function search($currentPage = 0, $release = false)
     {
-        $query = TheMovieDB::discoverMovie($currentPage, $release);
+        $query = TheMovieDB::discoverMovie(1+$currentPage, $release);
         $rawData = $query['results'];
-        $total_pages = min($query['total_pages'], 5);
-//        $total_results = $query['total_results'];
-        $total_results = $total_pages * 20;
-        $dataProvider = new CArrayDataProvider($rawData, array(
-//            'sort' => array(
-//                'attributes' => array(
-//                    'id',
-//                    'title',
-//                ),
-//            ),
-            'pagination' => array(
-                'pageSize' => 20,
-            ),
-        ));
-        // $dataProvider->setTotalItemCount(80);
+
+        if(Yii::app()->params['pageSize'] != count($rawData))
+            Yii::app()->params['pageSize'] = count($rawData);
+        $dataProvider = new CArrayDataProvider($rawData);
+        $dataProvider->pagination = false; // отключаем пагинацию
         return $dataProvider;
     }
 
@@ -182,6 +174,8 @@ class Movie extends CActiveRecord
 
     public function setRatingMovie()
     {
-        return TheMovieDB::setRating($this->id, $this->rating);
+        if($this->rating != 0)
+            if(!TheMovieDB::setRating($this->id, $this->rating))
+                $this->addError('rating', 'неудачная попытка установить рейтинг. при необходимости оставьте поле пустым.');
     }
 }
